@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
 
-test ("Sample test", async () => {
-console.log("Sample test run");
-});
+// test ("Sample test", async () => {
+// console.log("Sample test run");
+// });

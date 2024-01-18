@@ -2,6 +2,7 @@ import type { PlaywrightTestConfig } from "@playwright/test";
 import { devices } from "@playwright/test";
 
 const config: PlaywrightTestConfig = {
+    testDir: "tests/e2e", 
     timeout: 30000,
     expect: {
         timeout: 5000,
@@ -17,8 +18,9 @@ const config: PlaywrightTestConfig = {
         headless: false,
         viewport: {width: 1280, height: 720},
         actionTimeout: 5000,
-        video: "retain-on-failure",
-        screenshot: "only-on-failure",
+        video: "off",
+        screenshot: "off",
+        testIdAttribute: "data-qa",
     },
 
     projects: [

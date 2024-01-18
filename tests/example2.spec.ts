@@ -66,15 +66,16 @@ test.describe.parallel("Первый тестовый набор", () => {
 test("Смена языка", async ({page}) => {
     await page.goto("https://myretro.school.smartup.ru/");
     await page.click("[data-testid=lang-switcher-to-ru]");
-    const start = page.locator(".signin");
-    await expect(start).toContainText("Войти");
-});
 
-test("Смена языка RU", async ({page}) => {
-    await page.goto("https://myretro.school.smartup.ru/");
-    await page.click("[data-testid=lang-switcher-to-ru]");
-    const RU = page.locator(".active");
-    await expect(RU).toContainText("RU");
+    const signin = page.locator(".signin");
+    await expect(signin).toContainText("Войти");
+    const buttonSupport = page.locator(".row .button.support");
+    await expect(buttonSupport).toContainText("Поддержка");
+    const buttonFeedback = page.locator(".row > div > a:nth-child(2)");
+    await expect(buttonFeedback).toContainText("Оставить отзыв");
+
+    const buttonRU = page.locator(".active");
+    await expect(buttonRU).toContainText("RU");
 });
 
 

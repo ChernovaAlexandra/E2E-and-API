@@ -1,151 +1,127 @@
 import {test, expect} from "@playwright/test";
+import { LoginPage } from "../../page-objects/LoginPage";
+import { MyBoardsPage } from "../../page-objects/MyBoardsPage";
+import { Profile } from "../../page-objects/components/Profile";
+
 
 test.describe.parallel("User Profile", () => {
+    let loginPage: LoginPage;
+    let myBoardsPage: MyBoardsPage;
+    let profile: Profile;
+
     test.beforeEach(async ({page}) => {
-        await page.goto("https://myretro.school.smartup.ru/");
-        await page.click(".signin");
-        await page.type("#email", "chernova3012@gmail.com");
-        await page.type("#password", "Z0RkW6dNbi9JjAGNYs81");
-        await page.click(".button-login");
+        loginPage = new LoginPage(page);
+        myBoardsPage = new MyBoardsPage(page);
+        profile = new Profile(page);
+        await loginPage.visitMyRetro();
+        await loginPage.login("chernova3012@gmail.com", "Z0RkW6dNbi9JjAGNYs81");
 });
 
 test("Change First Name and Cancel", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    //await page.click("[data-qa=profile-option]");
-    await page.getByTestId("profile-option").click();
+    await myBoardsPage.openProfileMenu();
+    await profile.fillFirstNameField("Cancel first name"); 
+    await profile.clickCancelButton();
+    await myBoardsPage.openProfileMenu();
     
     const firstNameField = page.locator("#first-name");
-    //await page.type("#first-name", "Cancel first name");
-
-    await firstNameField.fill("Cancel first name");
-
-    await page.click("[data-qa=profile-cancel-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
     await expect(firstNameField).not.toHaveValue("Cancel first name");
 });
 
 
 test("Change First Name and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    
+    await myBoardsPage.openProfileMenu();
+    await profile.fillFirstNameField("Submit first name");
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
+
     const firstNameField = page.locator("#first-name");
-    await firstNameField.fill("Submit first name");
-
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
     await expect(firstNameField).toHaveValue("Submit first name");
 });
 
 test("Check Email Field", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    
+    await myBoardsPage.openProfileMenu();
+
     const email = page.locator("#email");
     await expect(email).toHaveValue("chernova3012@gmail.com");
 });
 
 
 test("Change Position and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    await page.click(".md-select-value[name=position-id]");
-    await page.getByRole('button', {name: 'product owner'}).click();
-
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
+    await myBoardsPage.openProfileMenu();
+    await profile.fillPositionField("product owner");
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
+    
     const position = page.locator(".md-select-value[name=position-id]");
     await expect(position).toHaveValue("product owner");
 });
 
 test("Change Work Experience and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await myBoardsPage.openProfileMenu();
     await page.fill("#workExperience", "11");
-    
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
 
     const experience = page.locator("#workExperience");
     await expect(experience).toHaveValue("11");
 });
 
-test("Change Birthday and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    await page.fill(".field-birthday .md-input", "2000-09-22");
+test.only("Change Birthday and Submit", async ({page}) => {
+    await myBoardsPage.openProfileMenu();
+    //await profile.fillBirthdayDate("2000-09-22");
+    await page.fill(".field-birthday .md-input", "2000-09-28");
+    
+    //await (await page.waitForSelector("text=Ok")).click();
+    
+    const okButton = page.locator("text=Ok");
+    await okButton.click();
+    await okButton.waitFor({state: "hidden"});
 
-    (await page.waitForSelector("text=Ok")).click();
-
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
 
     const birthdayDate = page.locator(".field-birthday .md-input");
-    await expect(birthdayDate).toHaveValue("2000-09-22");
+    await expect(birthdayDate).toHaveValue("2000-09-28");
 }); 
 
 
 test("Change Last Name and Cancel", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await myBoardsPage.openProfileMenu();
+    await profile.fillLastNameField("Cancel last name");
+    await profile.clickCancelButton();
+    await myBoardsPage.openProfileMenu();
     
     const lastNameField = page.locator("#last-name");
-    await lastNameField.fill("Cancel last name");
-
-    await page.click("[data-qa=profile-cancel-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
     await expect(lastNameField).not.toHaveValue("Cancel last name");
 });
 
 test("Change Last Name and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    
+    await myBoardsPage.openProfileMenu();
+    await profile.fillLastNameField("Submit last name");
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
+
     const lastNameField = page.locator("#last-name");
-    await lastNameField.fill("Submit last name");
-
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
     await expect(lastNameField).toHaveValue("Submit last name");
 });
 
 test("Change Phone and Cancel", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-
-    const phoneField = page.locator("#phone");
-    await phoneField.fill("88005553535");
-
-    await page.click("[data-qa=profile-cancel-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await myBoardsPage.openProfileMenu();
+    await profile.fillPhoneField("88005553535");
+    await profile.clickCancelButton();
+    await myBoardsPage.openProfileMenu();
     
+    const phoneField = page.locator("#phone");
     await expect(phoneField).not.toHaveValue("88005553535");
 });
 
 test("Change Phone and Submit", async ({page}) => {
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
+    await myBoardsPage.openProfileMenu();
+    await profile.fillPhoneField("98887776655")
+    await profile.clickSubmitButton();
+    await myBoardsPage.openProfileMenu();
 
     const phoneField = page.locator("#phone");
-    await phoneField.fill("98887776655");
-
-    await page.click("[data-qa=profile-submit-button]");
-    await page.click(".hamburger-checkbox");
-    await page.getByTestId("profile-option").click();
-    
     await expect(phoneField).toHaveValue("98887776655");
 });
 });

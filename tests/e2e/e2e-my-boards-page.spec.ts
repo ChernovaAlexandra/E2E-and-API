@@ -1,22 +1,21 @@
 import {test, expect} from "@playwright/test";
+import { LoginPage } from "../../page-objects/LoginPage";
+import { MyBoardsPage } from "../../page-objects/MyBoardsPage";
 
 test.describe.parallel("My Boards Page", () => {
+    let loginPage: LoginPage;
+    let myBoardsPage: MyBoardsPage;
+
     test.beforeEach(async ({page}) => {
-        await page.goto("https://myretro.school.smartup.ru/");
-        await page.click(".signin");
-        await page.type("#email", "chernova3012@gmail.com");
-        await page.type("#password", "Z0RkW6dNbi9JjAGNYs81");
-        await page.click(".button-login");
+        loginPage = new LoginPage(page);
+        myBoardsPage = new MyBoardsPage(page);
+        await loginPage.visitMyRetro();
+        await loginPage.login("chernova3012@gmail.com", "Z0RkW6dNbi9JjAGNYs81");
 });
 
 test("Create New Board with 3 Columns", async ({page}) => {
-    await page.getByTestId("add-new-board").click();
-    await page.type("[data-qa=new-board-project-name]", "Test project");
-    await page.getByTestId("new-board-columns-number").click();
-    await page.click("text=- 3 -");
-    await page.getByTestId("new-board-column-names").click();
-    await page.click("text=- 3 - Good - Bad - Actions");
-    await page.getByTestId("start-retro-button").click();
+    await myBoardsPage.fillNewBoardForm("Test project", 3, "Good - Bad - Actions");
+    await myBoardsPage.clickStartRetroButton();
 
     const boardTitle = page.locator("[data-qa=board-project-title]");
     await expect(boardTitle).toHaveText("Test project");
@@ -24,13 +23,8 @@ test("Create New Board with 3 Columns", async ({page}) => {
 }); 
 
 test("Create New Board with 4 Columns", async ({page}) => {
-    await page.getByTestId("add-new-board").click();
-    await page.type("[data-qa=new-board-project-name]", "Test project 4");
-    await page.getByTestId("new-board-columns-number").click();
-    await page.click("text=- 4 -");
-    await page.getByTestId("new-board-column-names").click();
-    await page.click("text=- 4 - Good - Bad - Keep - Actions");
-    await page.getByTestId("start-retro-button").click();
+    await myBoardsPage.fillNewBoardForm("Test project 4", 4, "Good - Bad - Keep - Actions");
+    await myBoardsPage.clickStartRetroButton();
 
     const boardTitle = page.locator("[data-qa=board-project-title]");
     await expect(boardTitle).toHaveText("Test project 4");

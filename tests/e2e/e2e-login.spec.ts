@@ -1,35 +1,29 @@
-import {test, expect} from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { LoginPage } from "../../page-objects/LoginPage";
 
 test.describe.parallel("Login and Logout", () => {
-    test.beforeEach(async ({page}) => {
-        await page.goto("https://myretro.school.smartup.ru/");
-});
+    let loginPage: LoginPage;
 
-
-    test("Login with invalid credentials", async ({page}) => {
-        await page.click(".signin");
-        await page.type("#email", "wrong email");
-        await page.type("#password", "wrong password");
-        await page.click(".button-login");
-        
-        const errorMessage = page.locator("text=Error: Authentication failed: Wrong login or password");
-        
-        await expect(errorMessage).toContainText("Error: Authentication failed: Wrong login or password");
+    test.beforeEach(async ({ page }) => {
+        loginPage = new LoginPage(page);
+        await loginPage.visitMyRetro();
     });
 
-//Positive  test
-test("Login and Logout with credentials", async ({page}) => {
-    await page.click(".signin");
-    await page.type("#email", "chernova3012@gmail.com");
-    await page.type("#password", "Z0RkW6dNbi9JjAGNYs81");
-    await page.click(".button-login");
+    test("Login with invalid credentials", async ({ page }) => {
+        await loginPage.login("wrong email", "wrong password");
+        await loginPage.assertErrorMessage();
+    });
 
-    const headerTitle = page.locator(".blueprint .header .title");
-    await expect(headerTitle).toBeVisible();
+    //Positive  test
+    test("Login and Logout with credentials", async ({ page }) => {
+        await loginPage.login("chernova3012@gmail.com", "Z0RkW6dNbi9JjAGNYs81");
 
-    await page.click(".col .logout");
+        const headerTitle = page.locator(".blueprint .header .title");
+        await expect(headerTitle).toBeVisible();
 
-    const signinButton = page.locator(".main .signin");
-    await expect(signinButton).toBeVisible();
-});
+        await page.click(".col .logout");
+
+        const signinButton = page.locator(".main .signin");
+        await expect(signinButton).toBeVisible();
+    });
 });

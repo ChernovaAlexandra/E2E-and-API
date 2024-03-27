@@ -68,14 +68,9 @@ test("Change Work Experience and Submit", async ({page}) => {
 
 test.only("Change Birthday and Submit", async ({page}) => {
     await myBoardsPage.openProfileMenu();
-    //await profile.fillBirthdayDate("2000-09-22");
+    
     await page.fill(".field-birthday .md-input", "2000-09-28");
-    
-    //await (await page.waitForSelector("text=Ok")).click();
-    
-    const okButton = page.locator("text=Ok");
-    await okButton.click();
-    await okButton.waitFor({state: "hidden"});
+    await (await page.waitForSelector("text=Ok")).click();
 
     await profile.clickSubmitButton();
     await myBoardsPage.openProfileMenu();
